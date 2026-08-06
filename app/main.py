@@ -16,7 +16,6 @@ app.include_router(users.router)
 app.include_router(conversations.router)
 app.include_router(routes.router)
 
-
 @app.get("/")
 def root():
     return {
