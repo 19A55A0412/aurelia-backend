@@ -1,0 +1,12 @@
+profiles
+challenges
+reflections
+sessions
+messages
+memories
+safety_events
+contact_messages
+session_feedback
+session_summaries
+knowledge_documents
+knowledge_chunks
