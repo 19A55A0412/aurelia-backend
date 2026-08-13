@@ -1,8 +1,14 @@
 from fastapi import APIRouter, HTTPException, Header
 from pydantic import BaseModel, EmailStr
-from app.db.supabase_client import supabase
 
-router = APIRouter(prefix="/auth", tags=["Authentication"])
+from app.database.supabase_client import supabase
+from app.dependencies import get_current_user
+
+
+router = APIRouter(
+    prefix="/auth",
+    tags=["Authentication"]
+)
 
 
 class SignupRequest(BaseModel):
@@ -31,7 +37,6 @@ class ResendConfirmationRequest(BaseModel):
 
 @router.post("/signup")
 def signup(data: SignupRequest):
-
     try:
         response = supabase.auth.sign_up({
             "email": data.email,
@@ -45,8 +50,8 @@ def signup(data: SignupRequest):
                     "email": data.email,
                     "full_name": data.full_name
                 }).execute()
-            except Exception:
-                pass
+            except Exception as profile_error:
+                print("PROFILE CREATION ERROR:", profile_error)
 
         return {
             "message": "Signup successful",
@@ -54,12 +59,14 @@ def signup(data: SignupRequest):
         }
 
     except Exception as e:
-        raise HTTPException(400, str(e))
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
 
 
 @router.post("/login")
 def login(data: LoginRequest):
-
     try:
         response = supabase.auth.sign_in_with_password({
             "email": data.email,
@@ -73,23 +80,30 @@ def login(data: LoginRequest):
         }
 
     except Exception as e:
-        raise HTTPException(401, str(e))
+        raise HTTPException(
+            status_code=401,
+            detail=str(e)
+        )
 
 
 @router.post("/logout")
 def logout():
-
     try:
         supabase.auth.sign_out()
-        return {"message": "Logged out"}
+
+        return {
+            "message": "Logged out"
+        }
 
     except Exception as e:
-        raise HTTPException(400, str(e))
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
 
 
 @router.post("/forgot-password")
 def forgot_password(data: ForgotPasswordRequest):
-
     try:
         supabase.auth.reset_password_for_email(
             data.email
@@ -100,12 +114,14 @@ def forgot_password(data: ForgotPasswordRequest):
         }
 
     except Exception as e:
-        raise HTTPException(400, str(e))
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
 
 
 @router.post("/reset-password")
 def reset_password(data: ResetPasswordRequest):
-
     try:
         supabase.auth.set_session(
             data.access_token,
@@ -122,12 +138,16 @@ def reset_password(data: ResetPasswordRequest):
         }
 
     except Exception as e:
-        raise HTTPException(400, str(e))
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
 
 
 @router.post("/resend-confirmation")
-def resend_confirmation(data: ResendConfirmationRequest):
-
+def resend_confirmation(
+    data: ResendConfirmationRequest
+):
     try:
         supabase.auth.resend({
             "type": "signup",
@@ -139,14 +159,16 @@ def resend_confirmation(data: ResendConfirmationRequest):
         }
 
     except Exception as e:
-        raise HTTPException(400, str(e))
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
 
 
 @router.get("/me")
-def me(authorization: str = Header(None)):
-
-    from app.dependencies import get_current_user
-
+def me(
+    authorization: str = Header(None)
+):
     user = get_current_user(authorization)
 
     return {

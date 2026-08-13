@@ -1,8 +1,12 @@
 from fastapi import APIRouter, Depends
-from app.dependencies import get_current_user
-from app.db.supabase_client import supabase
 
-router = APIRouter(tags=["Contact & Privacy"])
+from app.dependencies import get_current_user
+from app.database.supabase_client import supabase
+
+
+router = APIRouter(
+    tags=["Contact & Privacy"]
+)
 
 
 @router.post("/contact")
@@ -10,7 +14,6 @@ def contact(
     data: dict,
     user=Depends(get_current_user)
 ):
-
     data["user_id"] = str(user.id)
 
     return (
@@ -23,12 +26,14 @@ def contact(
 
 
 @router.post("/export-data")
-def export_data(user=Depends(get_current_user)):
-
+def export_data(
+    user=Depends(get_current_user)
+):
     user_id = str(user.id)
 
     profile = (
-        supabase.table("profiles")
+        supabase
+        .table("profiles")
         .select("*")
         .eq("id", user_id)
         .execute()
@@ -36,7 +41,8 @@ def export_data(user=Depends(get_current_user)):
     )
 
     sessions = (
-        supabase.table("sessions")
+        supabase
+        .table("sessions")
         .select("*")
         .eq("user_id", user_id)
         .execute()
@@ -44,7 +50,8 @@ def export_data(user=Depends(get_current_user)):
     )
 
     memories = (
-        supabase.table("memories")
+        supabase
+        .table("memories")
         .select("*")
         .eq("user_id", user_id)
         .execute()
@@ -59,12 +66,14 @@ def export_data(user=Depends(get_current_user)):
 
 
 @router.delete("/account")
-def delete_account(user=Depends(get_current_user)):
-
+def delete_account(
+    user=Depends(get_current_user)
+):
     user_id = str(user.id)
 
     supabase.table("profiles").delete().eq(
-        "id", user_id
+        "id",
+        user_id
     ).execute()
 
     return {

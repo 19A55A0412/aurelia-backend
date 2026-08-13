@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
+
 from app.dependencies import get_current_user
-from app.db.supabase_client import supabase
+from app.database.supabase_client import supabase
+
 
 router = APIRouter(
     prefix="/admin",
@@ -9,7 +11,6 @@ router = APIRouter(
 
 
 def require_admin(user):
-
     profile = (
         supabase
         .table("profiles")
@@ -28,8 +29,9 @@ def require_admin(user):
 
 
 @router.get("/users")
-def users(user=Depends(get_current_user)):
-
+def users(
+    user=Depends(get_current_user)
+):
     require_admin(user)
 
     return (
@@ -47,7 +49,6 @@ def update_user(
     data: dict,
     user=Depends(get_current_user)
 ):
-
     require_admin(user)
 
     return (
@@ -61,8 +62,9 @@ def update_user(
 
 
 @router.get("/safety")
-def safety(user=Depends(get_current_user)):
-
+def safety(
+    user=Depends(get_current_user)
+):
     require_admin(user)
 
     return {
@@ -75,7 +77,6 @@ def update_safety(
     data: dict,
     user=Depends(get_current_user)
 ):
-
     require_admin(user)
 
     return {
@@ -85,8 +86,9 @@ def update_safety(
 
 
 @router.get("/enquiries")
-def enquiries(user=Depends(get_current_user)):
-
+def enquiries(
+    user=Depends(get_current_user)
+):
     require_admin(user)
 
     return (

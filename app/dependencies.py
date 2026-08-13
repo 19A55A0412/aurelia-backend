@@ -1,13 +1,12 @@
 from fastapi import Header, HTTPException
-from app.db.supabase_client import supabase
+from app.database.supabase_client import supabase
 
 
 def get_current_user(authorization: str = Header(None)):
-
     if not authorization:
         raise HTTPException(
             status_code=401,
-            detail="Authorization header required"
+            detail="Authorization header is required"
         )
 
     if not authorization.startswith("Bearer "):
@@ -17,6 +16,12 @@ def get_current_user(authorization: str = Header(None)):
         )
 
     token = authorization.replace("Bearer ", "").strip()
+
+    if not token:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid token"
+        )
 
     try:
         response = supabase.auth.get_user(token)
@@ -29,8 +34,11 @@ def get_current_user(authorization: str = Header(None)):
 
         return response.user
 
-    except Exception:
+    except HTTPException:
+        raise
+
+    except Exception as e:
         raise HTTPException(
             status_code=401,
-            detail="Invalid or expired token"
+            detail=f"Authentication failed: {str(e)}"
         )

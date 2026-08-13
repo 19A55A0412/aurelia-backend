@@ -1,8 +1,13 @@
 from fastapi import APIRouter, Depends
-from app.dependencies import get_current_user
-from app.db.supabase_client import supabase
 
-router = APIRouter(prefix="/sessions", tags=["Feedback"])
+from app.dependencies import get_current_user
+from app.database.supabase_client import supabase
+
+
+router = APIRouter(
+    prefix="/sessions",
+    tags=["Feedback"]
+)
 
 
 @router.post("/{session_id}/feedback")
@@ -11,8 +16,8 @@ def feedback(
     data: dict,
     user=Depends(get_current_user)
 ):
-
     data.pop("user_id", None)
+
     data["session_id"] = session_id
     data["user_id"] = str(user.id)
 
@@ -31,7 +36,6 @@ def summary(
     data: dict,
     user=Depends(get_current_user)
 ):
-
     return (
         supabase
         .table("session_summaries")
@@ -51,7 +55,6 @@ def action_plan(
     data: dict,
     user=Depends(get_current_user)
 ):
-
     return (
         supabase
         .table("action_plans")

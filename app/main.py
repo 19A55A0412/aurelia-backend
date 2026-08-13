@@ -30,21 +30,44 @@ app.add_middleware(
     ],
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"],
+    allow_headers=["*"]
 )
 
 
+# Authentication
 app.include_router(auth.router)
+
+# Profile
 app.include_router(profile.router)
+
+# Challenges
 app.include_router(challenges.router)
+
+# Reflections
 app.include_router(reflections.router)
+
+# Sessions
 app.include_router(sessions.router)
+
+# AI
 app.include_router(chat.router)
+
+# Memories
 app.include_router(memories.router)
+
+# Knowledge
 app.include_router(knowledge.router)
+
+# Roleplay
 app.include_router(roleplay.router)
+
+# Feedback / Summary / Action Plan
 app.include_router(feedback.router)
+
+# Contact / Export / Account
 app.include_router(contact.router)
+
+# Admin
 app.include_router(admin.router)
 
 
